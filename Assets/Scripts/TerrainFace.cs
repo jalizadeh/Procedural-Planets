@@ -9,6 +9,7 @@ using UnityEngine;
 public class TerrainFace
 {
     Mesh mesh;
+    ShapeGenerator shapeGenerator;
     int resolution; //number of vertecies on the mesh
     Vector3 localUp; //to which side it is looking at
 
@@ -17,9 +18,10 @@ public class TerrainFace
 
     public Vector3[] vertices;
 
-    public TerrainFace(Mesh mesh, int resolution, Vector3 localUp)
+    public TerrainFace(ShapeGenerator shapeGenerator, Mesh mesh, int resolution, Vector3 localUp)
     {
         this.mesh = mesh;
+        this.shapeGenerator = shapeGenerator;
         this.resolution = resolution;
         this.localUp = localUp; //facing (out) axis
 
@@ -75,7 +77,7 @@ public class TerrainFace
 
                 Vector3 pointOnUnitSphere = pointOnUnitCube.normalized;
                 //vertices[i] = pointOnUnitCube;
-                vertices[i] = pointOnUnitSphere;
+                vertices[i] = shapeGenerator.CalculatePointOnPlanet(pointOnUnitSphere);
 
                 //I can not create any mesh on the edge
                 if (x != resolution -1 && y!=resolution - 1)

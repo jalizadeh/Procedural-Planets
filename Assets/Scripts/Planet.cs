@@ -13,15 +13,28 @@ public class Planet : MonoBehaviour
 
     TerrainFace[] terrainFaces;
 
+    public ShapeSettings shapeSettings;
+    public ColorSettings colorSettings;
 
-    private void OnValidate()
-    {
-        Initialize();
-        GenerateMesh();
-    }
+    ShapeGenerator shapeGenerator;
+
+    /* used for closing/openning their editor in `PlanetEditor`
+     * these can't be stored in `PlanetEditor`, so they are here
+     * and accessed by `ref`, so the change can be stored here
+     */
+    [HideInInspector]
+    public bool shapeSettingsFoldout;
+    [HideInInspector]
+    public bool colorSettingsFoldout;
+
+    //if disabled, you have to press "Update Planet" to manually update the settings
+    public bool autoUpdate;
+
 
     void Initialize()
     {
+        shapeGenerator = new ShapeGenerator(shapeSettings);
+
         //create it once, and later update it ONLY
         if (meshFilters == null || meshFilters.Length == 0)
         {
@@ -48,9 +61,26 @@ public class Planet : MonoBehaviour
                 meshFilters[i].sharedMesh = new Mesh();
             }
 
-            terrainFaces[i] = new TerrainFace(meshFilters[i].sharedMesh, resolution, directions[i]);
+            terrainFaces[i] = new TerrainFace(shapeGenerator,meshFilters[i].sharedMesh, resolution, directions[i]);
         }
     }
+
+
+    public void GeneratePlanet() {
+        Initialize();
+        GenerateMesh();
+        GenerateColors();
+    }
+
+    public void OnShapeSettingsUpdated()
+    {
+        if (autoUpdate)
+        {
+            Initialize();
+            GenerateMesh();
+        }
+    }
+
 
     void GenerateMesh()
     {
@@ -60,6 +90,25 @@ public class Planet : MonoBehaviour
         }
     }
 
+
+    void GenerateColors() {
+        foreach(MeshFilter m in meshFilters)
+        {
+            m.GetComponent<Renderer>().sharedMaterial.color = colorSettings.planetColor;
+        }
+    }
+
+    public void OnColorSettingsUpdated()
+    {
+        if (autoUpdate)
+        {
+            Initialize();
+            GenerateColors();
+        }
+
+    }
+
+    
 
     //show vertecies by dots
     private void OnDrawGizmos()
