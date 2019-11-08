@@ -57,6 +57,7 @@ public class TerrainFace
         //total number of meshes * (vertecies each mesh uses) = ((r-1)^2 * 2) * 3
         int[] triangles = new int[(resolution - 1) * (resolution - 1) * 2 * 3];
         int triIndex = 0;
+        Vector2[] uv = mesh.uv;
 
         for (int y = 0; y < resolution; y++)
         {
@@ -101,5 +102,39 @@ public class TerrainFace
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
+        mesh.uv = uv;
+    }
+
+
+
+    public void UpdateUVs(ColorGenerator colorGenerator)
+    {
+        Vector2[] uv = new Vector2[resolution * resolution];
+
+        for (int y = 0; y < resolution; y++)
+        {
+            for (int x = 0; x < resolution; x++)
+            {
+                //index counter
+                int i = x + y * resolution;
+
+                //it varies between 0-1
+                //starts with 0, each time added by a fraction
+                Vector2 percent = new Vector2(x, y) / (resolution - 1);
+
+                //the percent usage is very tricky and nice
+                Vector3 pointOnUnitCube =
+                        localUp  //point position on the facing axis
+                        + (percent.x - 0.5f) * 2 * axisA  //point position on the "relative" +x
+                        + (percent.y - 0.5f) * 2 * axisB; //point position on the "relative" -y
+
+                Vector3 pointOnUnitSphere = pointOnUnitCube.normalized;
+
+                uv[i] = new Vector2(colorGenerator.BiomePercentFromPoint(pointOnUnitSphere),0);
+                
+            }
+        }
+
+        mesh.uv = uv;
     }
 }
