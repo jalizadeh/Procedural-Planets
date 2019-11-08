@@ -22,7 +22,8 @@ public class Planet : MonoBehaviour
     public ShapeSettings shapeSettings;
     public ColorSettings colorSettings;
 
-    ShapeGenerator shapeGenerator;
+    ShapeGenerator shapeGenerator = new ShapeGenerator();
+    ColorGenerator colorGenerator = new ColorGenerator();
 
     /* used for closing/openning their editor in `PlanetEditor`
      * these can't be stored in `PlanetEditor`, so they are here
@@ -39,7 +40,8 @@ public class Planet : MonoBehaviour
 
     void Initialize()
     {
-        shapeGenerator = new ShapeGenerator(shapeSettings);
+        shapeGenerator.UpdateSettings(shapeSettings);
+        colorGenerator.UpdateSettings(colorSettings);
 
         //create it once, and later update it ONLY
         if (meshFilters == null || meshFilters.Length == 0)
@@ -62,10 +64,11 @@ public class Planet : MonoBehaviour
                 GameObject meshObj = new GameObject("mesh" + i);
                 meshObj.transform.parent = transform;
 
-                meshObj.AddComponent<MeshRenderer>().sharedMaterial = new Material(Shader.Find("Standard"));
+                meshObj.AddComponent<MeshRenderer>();
                 meshFilters[i] = meshObj.AddComponent<MeshFilter>();
                 meshFilters[i].sharedMesh = new Mesh();
             }
+            meshFilters[i].GetComponent<Renderer>().sharedMaterial = colorSettings.planetMaterial;
 
             terrainFaces[i] = new TerrainFace(shapeGenerator,meshFilters[i].sharedMesh, resolution, directions[i]);
 
@@ -101,14 +104,13 @@ public class Planet : MonoBehaviour
                 terrainFaces[i].ConstructMesh();
             }
         }
+
+        colorGenerator.UpdateElevation(shapeGenerator.elevationMinMax);
     }
 
 
     void GenerateColors() {
-        foreach(MeshFilter m in meshFilters)
-        {
-            m.GetComponent<Renderer>().sharedMaterial.color = colorSettings.planetColor;
-        }
+        colorGenerator.UpdateColors();
     }
 
     public void OnColorSettingsUpdated()
