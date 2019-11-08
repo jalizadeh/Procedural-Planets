@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class Planet : MonoBehaviour
 {
+    public enum FaceRenderMask { All, Top, Bottom, Left, Right, Front, Back};
+    public FaceRenderMask faceRenderMask;
+
     [Range(2, 256)] // 256 is the maximum number possible
     public int resolution = 10;
+
     public bool showVertecies = false;
+    [Range(0.001f, 0.05f)]
+    public float vertexGizmoSize = 0.01f;
 
     [SerializeField, HideInInspector]
     MeshFilter[] meshFilters; // holds all 6 sides
@@ -62,6 +68,10 @@ public class Planet : MonoBehaviour
             }
 
             terrainFaces[i] = new TerrainFace(shapeGenerator,meshFilters[i].sharedMesh, resolution, directions[i]);
+
+            //For optimizing rendering faces, So now I can choose to render all or one face at the time
+            bool renderFace = faceRenderMask == FaceRenderMask.All || (int)faceRenderMask - 1 == i;
+            meshFilters[i].gameObject.SetActive(renderFace);
         }
     }
 
@@ -84,9 +94,12 @@ public class Planet : MonoBehaviour
 
     void GenerateMesh()
     {
-        foreach (TerrainFace face in terrainFaces)
+        for (int i = 0; i < 6; i++)
         {
-            face.ConstructMesh();
+            if (meshFilters[i].gameObject.activeSelf)
+            {
+                terrainFaces[i].ConstructMesh();
+            }
         }
     }
 
@@ -126,7 +139,7 @@ public class Planet : MonoBehaviour
 
                     for (int i = 0; i < vs.Length; i++)
                     {
-                        Gizmos.DrawSphere(vs[i], 0.05f);
+                        Gizmos.DrawSphere(vs[i], vertexGizmoSize);
                     }
                 }
             }

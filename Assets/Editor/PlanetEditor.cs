@@ -27,6 +27,8 @@ public class PlanetEditor : Editor
             planet.GeneratePlanet();
         }
 
+        EditorGUILayout.HelpBox("If you need to increase the resolution, you'd better hide meshes by Face Render Mask.", MessageType.Info);
+
         //[A]
         DrawSettingsEditor(planet.shapeSettings, planet.OnShapeSettingsUpdated, ref planet.shapeSettingsFoldout, ref shapeEditor);
         DrawSettingsEditor(planet.colorSettings, planet.OnColorSettingsUpdated, ref planet.colorSettingsFoldout, ref colorEditor);
