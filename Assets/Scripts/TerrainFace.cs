@@ -57,7 +57,7 @@ public class TerrainFace
         //total number of meshes * (vertecies each mesh uses) = ((r-1)^2 * 2) * 3
         int[] triangles = new int[(resolution - 1) * (resolution - 1) * 2 * 3];
         int triIndex = 0;
-        Vector2[] uv = mesh.uv;
+        Vector2[] uv = (mesh.uv.Length == vertices.Length) ? mesh.uv : new Vector2[vertices.Length];
 
         for (int y = 0; y < resolution; y++)
         {
@@ -78,7 +78,9 @@ public class TerrainFace
 
                 Vector3 pointOnUnitSphere = pointOnUnitCube.normalized;
                 //vertices[i] = pointOnUnitCube;
-                vertices[i] = shapeGenerator.CalculatePointOnPlanet(pointOnUnitSphere);
+                float unscaledElevation = shapeGenerator.CalculateUnscaledElevation(pointOnUnitSphere);
+                vertices[i] = pointOnUnitSphere * shapeGenerator.GetScaledElevation(unscaledElevation);
+                uv[i].y = unscaledElevation;
 
                 //I can not create any mesh on the edge
                 if (x != resolution -1 && y!=resolution - 1)
@@ -109,7 +111,7 @@ public class TerrainFace
 
     public void UpdateUVs(ColorGenerator colorGenerator)
     {
-        Vector2[] uv = new Vector2[resolution * resolution];
+        Vector2[] uv = mesh.uv;
 
         for (int y = 0; y < resolution; y++)
         {
@@ -130,7 +132,7 @@ public class TerrainFace
 
                 Vector3 pointOnUnitSphere = pointOnUnitCube.normalized;
 
-                uv[i] = new Vector2(colorGenerator.BiomePercentFromPoint(pointOnUnitSphere),0);
+                uv[i].x = colorGenerator.BiomePercentFromPoint(pointOnUnitSphere);
                 
             }
         }

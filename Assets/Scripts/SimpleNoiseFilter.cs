@@ -26,9 +26,7 @@ public class SimpleNoiseFilter  : INoiseFilter
             amplitude *= noiseSettings.persistence;
         }
 
-        //as everything is converted to be in range [0,1], this `minValue` will make every noise to 0, if
-        // it is less than the `minValue`
-        noiseValue = Mathf.Max(0, noiseValue - noiseSettings.minValue);
+        noiseValue = noiseValue - noiseSettings.minValue;
         return noiseValue * noiseSettings.strength;
     }
 }

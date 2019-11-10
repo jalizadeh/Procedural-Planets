@@ -8,6 +8,7 @@ public class ColorSettings : ScriptableObject
     
     public Material planetMaterial;
     public BiomeColorSettings biomeColorSettings;
+    public Gradient oceanColor;
 
 
     [System.Serializable]
@@ -19,6 +20,7 @@ public class ColorSettings : ScriptableObject
         public float noiseStrength;
         [Range(0,1)]
         public float blendAmount;
+
 
         [System.Serializable]
         public class Biome
