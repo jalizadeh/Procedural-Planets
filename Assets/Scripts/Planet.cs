@@ -38,6 +38,13 @@ public class Planet : MonoBehaviour
     public bool autoUpdate;
 
 
+    //loaded on Game mode
+    private void Start()
+    {
+        GeneratePlanet();
+    }
+
+
     void Initialize()
     {
         shapeGenerator.UpdateSettings(shapeSettings);
