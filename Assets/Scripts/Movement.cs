@@ -8,6 +8,11 @@ public class Movement : MonoBehaviour
     Vector3 moveDelta = Vector3.zero;
     float speed = 10f;
 
+    float cameraDistanceMax = -3f;
+    float cameraDistanceMin = -6f;
+    float cameraDistance = -3f;
+    float scrollSpeed = 0.5f;
+
 
     // Update is called once per frame
     void Update()
@@ -32,5 +37,11 @@ public class Movement : MonoBehaviour
         }
 
         previousPosition = Input.mousePosition;
+
+
+        //Camera zoom in/out
+        cameraDistance += Input.GetAxis("Mouse ScrollWheel") * scrollSpeed;
+        cameraDistance = Mathf.Clamp(cameraDistance, cameraDistanceMin, cameraDistanceMax);
+        Camera.main.transform.position = Vector3.forward * cameraDistance;
     }
 }
